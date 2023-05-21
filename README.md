@@ -15,6 +15,10 @@ This command will create a bidirectional serial connection to the PortaCount. If
 
     screen /dev/ttyUSB0 1200
 
+## Serial Adapter Hardware that's known to work
+
+* [OIKWAN USB to RS232, USB Serial Adapter with FTDI Chipset, USB 2.0 to Male DB9](https://www.amazon.com/Adapter-Chipset-DB9-Serial-Converter-Windows/dp/B0759HSLP1/?th=1], which uses FTDI-FT232RL chipset)
+
 # fitconvert
 
 This script converts the ASCII output of a fit test with a standard 12 exercise sequence, inputted either on stdin or as a file (first argument of the script) and pulls out the 12 fit factors for each exercise. It doesn't output the ambient and mask values, the overall fit factor, pass/fail status, or target fit factor for passing. It outputs as a tab-delimited single line of just the individual exercise fit factors. This is useful for if you're using a spreadsheet for tracking fit exercises and can compute overall fit factor and make your own decisions about what constitutes a pass. 
