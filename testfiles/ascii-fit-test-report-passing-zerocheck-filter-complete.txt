@@ -1,0 +1,40 @@
+NEW TEST  PASS =   100
+Ambient         2980 #/cc
+Mask            0.01 #/cc
+Ambient         3460 #/cc
+FF    1       322000 PASS
+Mask            0.01 #/cc
+Ambient         4340 #/cc
+FF    2       390000 PASS
+Mask            0.03 #/cc
+Ambient         3570 #/cc
+FF    3       131000 PASS
+Mask            0.01 #/cc
+Ambient         3880 #/cc
+FF    4       372000 PASS
+Mask            0.01 #/cc
+Ambient         4210 #/cc
+FF    5       404000 PASS
+Mask            0.01 #/cc
+Ambient         4080 #/cc
+FF    6       414000 PASS
+Mask            0.01 #/cc
+Ambient         3920 #/cc
+FF    7       399000 PASS
+Mask            0.03 #/cc
+Ambient         3420 #/cc
+FF    8       122000 PASS
+Mask            0.04 #/cc
+Ambient         4060 #/cc
+FF    9        93400 PASS
+Mask            0.03 #/cc
+Ambient         4270 #/cc
+FF   10       138000 PASS
+Mask            0.01 #/cc
+Ambient         4500 #/cc
+FF   11       438000 PASS
+Mask            0.01 #/cc
+Ambient         4020 #/cc
+FF   12       426000 PASS
+Overall FF    221000 PASS
+

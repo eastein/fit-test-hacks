@@ -1,0 +1,61 @@
+#!/usr/bin/env python3 
+
+"""
+Author: Eric Stein
+
+This script converts the ASCII output of a fit test with a standard 12 exercise sequence, inputted either on stdin or as a file (first argument of the script) and pulls out the 12 fit factors for each exercise. It doesn't output the ambient and mask values, the overall fit factor, pass/fail status, or target fit factor for passing. It outputs as a tab-delimited single line of just the individual exercise fit factors. This is useful for if you're using a spreadsheet for tracking fit exercises and can compute overall fit factor and make your own decisions about what constitutes a pass. 
+
+
+SEE LICENSE in repo for licensing
+"""
+
+
+import re
+import sys
+
+EXPECTED_EXERCISES = 12
+
+
+if len(sys.argv) == 2:
+    fitreport = open(sys.argv[1], 'r').read()
+elif len(sys.argv) == 1:
+    fitreport = sys.stdin.read()
+else:
+    sys.stderr.write('CANNOT INTERPRET COMMAND\n')
+    sys.exit(1)
+
+lines = fitreport.split('\n')
+
+matcher = re.compile(r'^FF[\s]+([0-9]+)\s+(\d*[.,]?\d*)\s+')
+
+exercise_fitfactors = [None] * EXPECTED_EXERCISES
+
+for line in lines:
+    match = matcher.match(line)
+
+    if match:
+        exer_no, fit_factor = match.groups()
+        exer_no = int(exer_no)
+
+        if exer_no > EXPECTED_EXERCISES or exer_no < 1:
+            sys.stderr.write('FATAL: EXERCISE NUMBER OUT OF RANGE IN OUTPUT LINE: ' + line + '\n')
+            sys.exit(1)
+
+        else:
+            exercise_fitfactors[exer_no - 1] = fit_factor
+
+incomplete = False
+
+for i in range(EXPECTED_EXERCISES):
+    exer_no = i + 1
+    fit_factor = exercise_fitfactors[i]
+
+    if fit_factor is None:
+        sys.stderr.write(f'ERROR: EXERCISE NUMBER {exer_no} MISSING' + '\n')
+        incomplete = True
+
+if incomplete:
+    sys.stderr.write('FATAL: NOT ALL EXERCISES FOUND IN REPORT, ABORTING\n')
+    sys.exit(1)
+
+print('\t'.join(exercise_fitfactors))

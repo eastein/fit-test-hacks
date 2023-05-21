@@ -1,0 +1,39 @@
+NEW TEST  PASS =   100
+Ambient         5750 #/cc
+Mask             665 #/cc
+Ambient         5310 #/cc
+FF    1          8.3 FAIL
+Mask             676 #/cc
+Ambient         5340 #/cc
+FF    2          7.8 FAIL
+Mask             680 #/cc
+Ambient         5100 #/cc
+FF    3          7.6 FAIL
+Mask             922 #/cc
+Ambient         5040 #/cc
+FF    4          5.4 FAIL
+Mask             732 #/cc
+Ambient         4990 #/cc
+FF    5          6.8 FAIL
+Mask             688 #/cc
+Ambient         4950 #/cc
+FF    6          7.2 FAIL
+Mask             884 #/cc
+Ambient         8060 #/cc
+FF    7          7.3 FAIL
+Mask            1260 #/cc
+Ambient         8120 #/cc
+FF    8          6.4 FAIL
+Mask            1040 #/cc
+Ambient         8170 #/cc
+FF    9          7.8 FAIL
+Mask            1030 #/cc
+Ambient         8370 #/cc
+FF   10          7.9 FAIL
+Mask             958 #/cc
+Ambient         8230 #/cc
+FF   11          8.6 FAIL
+Mask            1230 #/cc
+Ambient         8340 #/cc
+FF   13          6.7 FAIL
+Overall FF       7.2 FAIL
