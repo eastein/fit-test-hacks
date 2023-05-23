@@ -1,0 +1,192 @@
+<html>
+<head>
+<title>Fit Test Assistant</title>
+</head>
+<body>
+<h1>Fit Test Assistant</h1>
+
+<p style="color: red;">
+    <strong>
+    WARNING: this has not been tested much, it's "alpha" quality software and shouldn't be used yet for real fit tests you'll rely on for anything. The list of exercises is not finalized and it may be buggy.
+    </strong>
+</p>
+
+<p>
+    This tool will tell you what to do both textually on screen and audibly (using Speech Synthesis in your browser) while you do the fit test. It will also keep time for you to ensure you do the right exercises for the right amount of time. It doesn't control a fit test machine. If you are using a Quantitative fit tester like a portacount, press start test on the machine and this web-page at the same moment to keep the directions and the machine's automatic exercise schedule synchronized.
+</p>
+
+<div id="start-button">
+<button onClick="startTest();">Start Fit Test</button>
+</div>
+
+<div id="stop-button" style="display: none;">
+<button onClick="cancelTest();">Cancel Fit Test</button>
+</div>
+
+<div id="exercise" style="display: none;">
+    <h2>You are doing Exercise <span id="exercise-number">[loading]</span></h2>
+    <p id="exercise-description">
+        [loading]
+    </p>
+    </p>
+    Seconds left (this exercise): <span id="seconds">[loading]</span>
+</div>
+
+<div id="completion" style="display: none;">
+    <h2>Test <span id="test-status">_</span></h2>
+
+</div>
+
+
+<script type="application/javascript">
+
+function displayBlockById(id, display) {
+    // overrides entire style element (yeah, yeah..) to set the display css directive for the element given by id
+    document.getElementById(id).style="display: " + display + ";";
+}
+
+function clearState() {
+    // wipes internal state of the fit test assistant exercise display + timer and 
+    displayBlockById("exercise", "none");
+    displayBlockById("completion", "none");
+
+    if (document.state && document.state["timer"]) {
+        clearInterval(document.state["timer"]);
+    }
+
+    document.state = {
+        // 0 based index in the EXERCISES array of what exercise is underway
+        "exerciseIndex": null,
+        // unix time when the test exercises were begun
+        "exercisesStartedAt": null,
+        // the timer handle
+        "timer": null
+    };
+
+    document.getElementById("exercise-number").textContent = "";
+    document.getElementById("exercise-description").textContent = "";
+    document.getElementById("seconds").textContent = "0";
+}
+
+var EXERCISE_LENGTH = 60;
+var EXERCISE_LENGTH_HUMAN = "one minute";
+
+// TODO add some way to display the list of exercises in advance and show the user where in the exercise list they are. What should the UX be here? Should it scroll by? 
+var EXERCISES = [
+    "Breathe normally.",
+    "Breathe deeply and regularly as if working hard.",
+    "Turn head from side to side, stop for a breath at each side.",
+    "Nod your head up and down, holding at each position for one or 2 breaths.",
+    "Talk, read the rainbow passage out loud as if speaking in a meeting so everyone can hear.",
+    "Bend down and up at waist as if touching your toes. If hooded, hold onto the hood while bending over.",
+    "Breathe normally again.",
+    "Smile as if for a picture and breathe deeply in and out. Yawn, but don't exaggerate the yawn. Breathe deeply.",
+    "Turn head from side to side, stop for a breath at each side.",
+    "Nod your head up and down, holding at each position for one or 2 breaths.",
+    "Breathe normally and stretch a little.", // TODO - how to word this? What stretch will challenge a mask the most?
+    "Continue to breathe normally.",
+]
+
+// a helpful wrapper to get unix epoch time in floating point seconds since jan 1st 1970
+function unixTime() {
+    return Date.now() / 1000;
+}
+
+// handler for the regular event that drives the assistant once started
+function tick() {
+    // first we render the timer & check whether the current exercise has finished
+    if (checkAndRenderTimer()) {
+        // this condition means that the current exercise has ran long enough and it's time to move to the next one-
+        // if there is one, anyway..
+
+        if (document.state["exerciseIndex"] == EXERCISES.length - 1) {
+            // clear the state which shuts off the timer, hides the count down, hides the current exercise area, turns off timer
+            clearState();
+            // display that the test has completed
+            testCompleted("Completed");
+        } else {
+            // start the next exercise
+            startExercise(document.state["exerciseIndex"] + 1);
+        }
+    }
+}
+
+function checkAndRenderTimer() {
+    /*
+    Check the time, update the timer on the screen
+
+    @return boolean, true if timer is completed for the exercise
+    */
+    target_time = document.state["exercisesStartedAt"] + EXERCISE_LENGTH * (document.state["exerciseIndex"] + 1);
+    now = unixTime();
+    if (now >= target_time) {
+        return true;
+    } else {
+        // display with tenths of seconds so it doesn't start counting down at 59 and sit there on zero for a little bit, which looks weird
+        document.getElementById("seconds").textContent = Math.floor((target_time - unixTime()) * 10) / 10.0;
+        return false;
+    }
+
+}
+
+
+function speak(statement) {
+    // wrapper for saying things aloud
+
+    speechSynthesis.speak(new SpeechSynthesisUtterance(statement));
+}
+
+function startExercise(i) {
+    // updates state to mark the current exercise, displays the instructions, displays the exercise number, displays how much time is left, and reads the instructions for the exercise that the user should begin, aloud.
+    document.state["exerciseIndex"] = i;
+
+    exercise_instruction = EXERCISES[i] + " Do this for " + EXERCISE_LENGTH_HUMAN + ".";
+
+    speak(exercise_instruction);
+
+    document.getElementById("exercise-number").textContent = i + 1;
+    document.getElementById("exercise-description").textContent = exercise_instruction;
+    checkAndRenderTimer();
+};
+
+function startTest() {
+    // first we clear and initialize the state
+    clearState();
+    // update state to show when we are starting the exercises which is used for math and timing later
+    document.state["exercisesStartedAt"] = unixTime();
+    // display the exercise tracking area
+    displayBlockById("exercise", "block");
+    // swap out the start button for the stop / cancel one
+    displayBlockById("start-button", "none");
+    displayBlockById("stop-button", "block");
+    // begin the exercises
+    startExercise(0);
+    
+    // and run the clock tick every 25ms to run through the exercises. We save the timer handle so the completion or canceling
+    // of the exercise can stop the timer
+    document.state["timer"] = setInterval(tick, 25);
+};
+
+// TODO add a pause option, but make sure to either mark the test as invalid somehow if it was paused in the middle for a quant test ( unless.. there are quant machines that let you pause....?) or don't show the button. Should the guide ask the user if they're doing qualitative or quantitative?
+
+function cancelTest() {
+    speechSynthesis.cancel();
+    clearState();
+    displayBlockById("start-button", "block");
+    displayBlockById("stop-button", "none");
+    testCompleted("Cancelled");
+    speak("Cancelled.")
+}
+
+function testCompleted(status_str) {
+    speak("Test completed.");
+    document.getElementById("test-status").textContent = status_str;
+    displayBlockById("completion", "block");
+
+    // TODO display something / say something about - how to know if the test "passed"? Whether to refer to the machine for that, or your own taste buds...
+}
+
+</script>
+
+
+</body>
