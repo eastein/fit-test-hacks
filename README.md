@@ -11,7 +11,7 @@ Note on page 4 of the technical addendum[1], in bullet point 5, the DIP switch i
 
 The GNU Screen program is very easy to use to connect to the PortaCount using the TSI data cable and a USB to Serial converter. Generally the device will appear on your computer as `/dev/ttyUSB0` when you plug in the converter, but the number may end up being different for you.
 
-This command will create a bidirectional serial connection to the PortaCount. If you run the fit test using controls on the device, or run it in count mode, each fit test you run will be printed out. 
+This command using [GNU Screen](https://www.gnu.org/software/screen/) will create a bidirectional serial connection to the PortaCount. If you run the fit test using controls on the device, or run it in count mode, each fit test you run will be printed out. 
 
     screen /dev/ttyUSB0 1200
 
